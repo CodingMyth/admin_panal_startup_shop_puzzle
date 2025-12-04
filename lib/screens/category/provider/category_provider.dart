@@ -20,21 +20,21 @@ class CategoryProvider extends ChangeNotifier {
   File? selectedImage;
   XFile? imgXFile;
 
-
+  //constructor
   CategoryProvider(this._dataProvider);
 
 
 
-  //complete addCategory
+  //complete addCategory method
   addCategory() async {
     try{
       if(selectedImage == null){
         SnackBarHelper.showErrorSnackBar("Please Choose a Image");
-        return;
+        return; //?stop the program eviction
       }
       Map<String,dynamic> formDataMap ={
         "name" : categoryNameCtrl.text,
-        "image" : "no_data", //image path will be add from server side
+        "image" : "no_data", //?image path will be add from server side
       };
 
       final FormData form = await createFormData(imgXFile: imgXFile, formData: formDataMap);
@@ -45,6 +45,7 @@ class CategoryProvider extends ChangeNotifier {
         if (apiResponse.success == true) {
           clearFields();
           SnackBarHelper.showSuccessSnackBar('${apiResponse.message}');
+          _dataProvider.getAllCategory();
         } else {
           SnackBarHelper.showErrorSnackBar("Failed to add category:${apiResponse.message}");
         }
@@ -59,11 +60,12 @@ class CategoryProvider extends ChangeNotifier {
     }
 
 
-  //TODO: should complete updateCategory
+  //complete updateCategory
+
 
   //TODO: should complete submitCategory
 
-
+  //pick image method
   void pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);

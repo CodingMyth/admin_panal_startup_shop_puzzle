@@ -13,7 +13,7 @@ import '../screens/order/provider/order_provider.dart';
 import '../screens/variants/provider/variant_provider.dart';
 import '../screens/variants_type/provider/variant_type_provider.dart';
 
-
+//this extension to easily get provider lik context.provider name from any where
 extension Providers on BuildContext {
   DataProvider get dataProvider => Provider.of<DataProvider>(this, listen: false);
   MainScreenProvider get mainScreenProvider => Provider.of<MainScreenProvider>(this, listen: false);

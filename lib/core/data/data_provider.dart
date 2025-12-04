@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../models/api_response.dart';
 import '../../models/coupon.dart';
 import '../../models/my_notification.dart';
@@ -59,13 +61,45 @@ class DataProvider extends ChangeNotifier {
   List<MyNotification> _filteredNotifications = [];
   List<MyNotification> get notifications => _filteredNotifications;
 
-  DataProvider() {}
+  //Constructor for fetch all category
+  DataProvider() {
+    getAllCategory();
+  }
 
 
-  //TODO: should complete getAllCategory
+  //call method getAllCategory
+   Future<List<Category>> getAllCategory({bool showSnack = false}) async{
+    try{
+      Response response = await service.getItems(endpointUrl: 'categories');
+      if(response.isOk){
+        ApiResponse<List<Category>> apiResponse = ApiResponse<List<Category>>.fromJson(
+          response.body,
+            (json) => (json as List).map((item) => Category.fromJson(item)).toList()
+        );
+      _allCategories = apiResponse.data ?? [];
+      _filteredCategories = List.from(_allCategories);//initialize filtered List with all data
+        notifyListeners();
+        if(showSnack) SnackBarHelper.showSuccessSnackBar(apiResponse.message);
+      }
+    }catch(e){
+      if(showSnack) SnackBarHelper.showErrorSnackBar(e.toString());
+      rethrow;
+    }
+    return _filteredCategories;
+   }
+  //call the filterCategories method
+  void filterCategories (String keyword){
+    if(keyword.isEmpty){
+      _filteredCategories = List.from(_allCategories);
+    }else{
+      final lowerKeyword = keyword.toLowerCase();
+      _filteredCategories = _allCategories.where((category){
+        return( category.name ?? '').toLowerCase().contains(lowerKeyword);
+      }).toList();
+    }
+    notifyListeners();
+  }
 
-
-  //TODO: should complete filterCategories
 
   //TODO: should complete getAllSubCategory
 
