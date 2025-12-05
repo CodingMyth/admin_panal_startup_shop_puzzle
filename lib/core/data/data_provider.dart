@@ -87,6 +87,7 @@ class DataProvider extends ChangeNotifier {
     }
     return _filteredCategories;
    }
+
   //call the filterCategories method
   void filterCategories (String keyword){
     if(keyword.isEmpty){
