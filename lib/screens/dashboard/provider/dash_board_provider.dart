@@ -1,6 +1,7 @@
 import 'dart:io';
 import '../../../models/brand.dart';
 import '../../../models/sub_category.dart';
+import '../../../models/variant.dart';
 import '../../../models/variant_type.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
@@ -106,11 +107,34 @@ class DashBoardProvider extends ChangeNotifier {
   }
 
 
-  //TODO: should complete filterSubcategory
+  //complete filterSubcategory
+  filterSubcategory(Category category){
+    selectedSubCategory=null;
+    selectedBrand=null;
+    selectedCategory = category;
+    subCategoriesByCategory.clear();
+    final newList= _dataProvider.subCategories.where((subcategory) => subcategory.categoryId?.sId == category.sId).toList();
+    subCategoriesByCategory = newList;
+    notifyListeners();
+  }
 
-  //TODO: should complete filterBrand
+  //complete filterBrand
+  filterBrand(SubCategory subCategory){
+    selectedBrand=null;
+    selectedSubCategory = subCategory;
+    brandsBySubCategory.clear();
+    final newList= _dataProvider.brands.where((brand) => brand.subcategoryId?.sId == subCategory.sId).toList();
+    brandsBySubCategory = newList;
+    notifyListeners();
+  }
 
-  //TODO: should complete filterVariant
+  // complete filterVariant
+  filterVariant(VariantType variantType){
+    selectedVariants = [];
+    selectedVariantType = variantType;
+    final newList = _dataProvider.variants.where((variant) => variant.variantTypeId?.sId == variantType.sId ).toList();
+    final List<String> variantNames = newList.map((variant)=> variant.name ?? '').toList();
+  }
 
 
 
