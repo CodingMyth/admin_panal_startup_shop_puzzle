@@ -22,18 +22,114 @@ class VariantsProvider extends ChangeNotifier {
 
 
   // addVariant method
-  addVariant()async{
-
+  addVariant() async {
+    try{
+      Map<String,dynamic> Variant = {
+        'name' : variantCtrl.text,
+        'VariantTypeId' : selectedVariantType?.sId
+      };
+      final response = await service.addItem(endpointUrl: 'variants', itemData: Variant);
+      if(response.isOk){
+        ApiResponse apiResponse = ApiResponse.fromJson(response.body, null);
+        if(apiResponse.success == true){
+          clearFields();
+          SnackBarHelper.showSuccessSnackBar('${apiResponse.message}');
+          _dataProvider.getAllVariant();
+        }else{
+          SnackBarHelper.showErrorSnackBar('Failed to add Sub Category : ${apiResponse.message}');
+        }
+      }else{
+        SnackBarHelper.showErrorSnackBar('Error:${response.body?['message'] ?? response.statusText}');
+      }
+    }catch(e){
+      print(e);
+      SnackBarHelper.showErrorSnackBar('An error occurred: $e');
+      rethrow;
+    }
   }
 
+  // updateVariant
+  updateVariant() async {
+    try {
+      // 1. Validation
+      if (variantForUpdate == null) {
+        SnackBarHelper.showErrorSnackBar('No variant selected for update');
+        return;
+      }
 
-  //TODO: should complete updateVariant
+      // 2. Prepare Data
+      Map<String, dynamic> variant = {
+        "name": variantCtrl.text,
+        // Use the selected dropdown ID, or fallback to existing ID if the user didn't change it
+        "categoryId": selectedVariantType?.sId ?? variantForUpdate?.variantTypeId,
+      };
 
+      // 3. Send Request
+      // We pass the 'body' Map directly.
+      final response = await service.updateItem(
+        endpointUrl: 'subCategories',
+        itemId: variantForUpdate?.sId ?? '',
+        itemData: variant,
+      );
 
-  //TODO: should complete submitVariant
+      // 4. Handle Response
+      if (response.isOk) {
+        ApiResponse apiResponse = ApiResponse.fromJson(response.body, null);
+        if (apiResponse.success == true) {
+          clearFields();
+          SnackBarHelper.showSuccessSnackBar('${apiResponse.message}');
 
+          // Refresh list
+          _dataProvider.getAllVariant();
 
-  //TODO: should complete deleteVariant
+          // Reset variables
+          variantForUpdate = null;
+          selectedVariantType = null;
+        } else {
+          SnackBarHelper.showErrorSnackBar('Failed to update: ${apiResponse.message}');
+        }
+      } else {
+        SnackBarHelper.showErrorSnackBar('Error: ${response.body?['message'] ?? response.statusText}');
+      }
+    } catch (e) {
+      print(e);
+      SnackBarHelper.showErrorSnackBar('Error occurred: $e');
+    }
+  }
+
+  //complete submitVariant
+  submitVariant(){
+    if(variantForUpdate != null){
+      updateVariant();
+    }else{
+      addVariant();
+    }
+  }
+
+  // complete deleteVariant
+  deleteVariant(Variant variant) async {
+    try {
+      Response response = await service.deleteItem(
+          endpointUrl: 'subCategories',
+          itemId: variant.sId ?? ''
+      );
+
+      if (response.isOk) {
+        ApiResponse apiResponse = ApiResponse.fromJson(response.body, null);
+        if (apiResponse.success == true) {
+          SnackBarHelper.showSuccessSnackBar("SubCategory deleted successfully");
+          // Refresh the sub-category list
+          _dataProvider.getAllVariant();
+        }
+      } else {
+        SnackBarHelper.showErrorSnackBar('Error : ${response.body?['message'] ?? response.statusText}');
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
 
 
   setDataForUpdateVariant(Variant? variant) {

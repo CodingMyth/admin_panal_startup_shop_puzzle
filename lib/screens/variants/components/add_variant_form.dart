@@ -98,7 +98,8 @@ class VariantSubmitForm extends StatelessWidget {
                       // Validate and save the form
                       if (context.variantProvider.addVariantsFormKey.currentState!.validate()) {
                         context.variantProvider.addVariantsFormKey.currentState!.save();
-                        //TODO: should complete call submitVariant
+                        // call submitVariant
+                        context.variantProvider.submitVariant();
                         Navigator.of(context).pop();
                       }
                     },
