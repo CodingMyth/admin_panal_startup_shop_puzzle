@@ -64,6 +64,7 @@ class DataProvider extends ChangeNotifier {
   //Constructor for fetch all category
   DataProvider() {
     getAllCategory();
+    getAllSubCategory();
   }
 
 
@@ -87,7 +88,6 @@ class DataProvider extends ChangeNotifier {
     }
     return _filteredCategories;
    }
-
   //call the filterCategories method
   void filterCategories (String keyword){
     if(keyword.isEmpty){
@@ -102,69 +102,74 @@ class DataProvider extends ChangeNotifier {
   }
 
 
-  //TODO: should complete getAllSubCategory
-
-
-  //TODO: should complete filterSubCategories
+  //complete getAllSubCategory
+  Future<List<SubCategory>> getAllSubCategory({bool showSnack = false}) async{
+    try{
+      Response response = await service.getItems(endpointUrl: 'subCategories');
+      if(response.isOk){
+        ApiResponse<List<SubCategory>> apiResponse = ApiResponse<List<SubCategory>>.fromJson(
+            response.body,
+                (json) => (json as List).map((item) => SubCategory.fromJson(item)).toList()
+        );
+        _allSubCategories = apiResponse.data ?? [];
+        _filteredSubCategories = List.from(_allSubCategories);//initialize filtered List with all data
+        notifyListeners();
+        if(showSnack) SnackBarHelper.showSuccessSnackBar(apiResponse.message);
+      }
+    }catch(e){
+      if(showSnack) SnackBarHelper.showErrorSnackBar(e.toString());
+      rethrow;
+    }
+    return _filteredSubCategories;
+  }
+  // complete filterSubCategories
+  void filterSubCategories (String keyword){
+    if(keyword.isEmpty){
+      _filteredSubCategories = List.from(_allSubCategories);
+    }else{
+      final lowerKeyword = keyword.toLowerCase();
+      _filteredSubCategories = _allSubCategories.where((SubCategory){
+        return( SubCategory.name ?? '').toLowerCase().contains(lowerKeyword);
+      }).toList();
+    }
+    notifyListeners();
+  }
 
 
   //TODO: should complete getAllBrands
-
-
   //TODO: should complete filterBrands
 
 
   //TODO: should complete getAllVariantType
-
-
   //TODO: should complete filterVariantTypes
-
-
-
   //TODO: should complete getAllVariant
-
-
   //TODO: should complete filterVariants
 
 
   //TODO: should complete getAllProduct
-
-
   //TODO: should complete filterProducts
 
 
   //TODO: should complete getAllCoupons
-
-
   //TODO: should complete filterCoupons
 
 
   //TODO: should complete getAllPosters
-
-
   //TODO: should complete filterPosters
 
 
   //TODO: should complete getAllNotifications
-
-
   //TODO: should complete filterNotifications
 
 
   //TODO: should complete getAllOrders
-
-
   //TODO: should complete filterOrders
 
 
 
 
   //TODO: should complete calculateOrdersWithStatus
-
-
   //TODO: should complete filterProductsByQuantity
-
-
   //TODO: should complete calculateProductWithQuantity
 
 

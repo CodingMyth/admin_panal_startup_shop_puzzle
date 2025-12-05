@@ -1,3 +1,5 @@
+import 'package:admin/utility/extensions.dart';
+
 import '../../../core/data/data_provider.dart';
 import '../../../models/sub_category.dart';
 import 'add_sub_category_form.dart';
@@ -62,7 +64,8 @@ class SubCategoryListSection extends StatelessWidget {
                         showAddSubCategoryForm(context, dataProvider.subCategories[index]);
                       },
                       delete: () {
-                        //TODO: should complete call deleteSubCategory
+                        // call deleteSubCategory
+                        context.subCategoryProvider.deleteSubCategory(dataProvider.subCategories[index]);
                       },
                     ),
                   ),
