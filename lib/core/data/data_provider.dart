@@ -242,8 +242,44 @@ class DataProvider extends ChangeNotifier {
   }
 
 
-  //TODO: should complete getAllProduct
-  //TODO: should complete filterProducts
+  // complete getAllProduct
+  Future<List<Product>> getAllProduct({bool showSnack = false}) async{
+    try{
+      Response response = await service.getItems(endpointUrl: 'product');
+      if(response.isOk){
+        ApiResponse<List<Product>> apiResponse = ApiResponse<List<Product>>.fromJson(
+            response.body,
+                (json) => (json as List).map((item) => Product.fromJson(item)).toList()
+        );
+        _allProducts = apiResponse.data ?? [];
+        _filteredProducts = List.from(_allProducts);//initialize filtered List with all data
+        notifyListeners();
+        if(showSnack) SnackBarHelper.showSuccessSnackBar(apiResponse.message);
+        return _filteredProducts;
+      }
+    }catch(e){
+      if(showSnack) SnackBarHelper.showErrorSnackBar(e.toString());
+      rethrow;
+    }
+    return _filteredProducts;
+  }
+  // filterProducts
+  void filterProducts (String keyword){
+    if(keyword.isEmpty){
+      _filteredProducts = List.from(_allProducts);
+    }else{
+      final lowerKeyword = keyword.toLowerCase();
+      _filteredProducts = _allProducts.where((Product){
+        //condition
+
+
+
+        return( Product.name ?? '').toLowerCase().contains(lowerKeyword);
+      }).toList();
+    }
+    notifyListeners();
+  }
+
 
 
   //TODO: should complete getAllCoupons

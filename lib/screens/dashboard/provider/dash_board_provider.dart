@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../../models/api_response.dart';
 import '../../../models/brand.dart';
 import '../../../models/sub_category.dart';
 import '../../../models/variant.dart';
@@ -11,6 +12,7 @@ import '../../../core/data/data_provider.dart';
 import '../../../models/category.dart';
 import '../../../services/http_services.dart';
 import '../../../models/product.dart';
+import '../../../utility/snack_bar_helper.dart';
 
 class DashBoardProvider extends ChangeNotifier {
   HttpService service = HttpService();
@@ -42,12 +44,67 @@ class DashBoardProvider extends ChangeNotifier {
 
   DashBoardProvider(this._dataProvider);
 
-  //TODO: should complete addProduct
+  //complete addProduct
+  addProduct() async {
+    try {
+      // 1. Prepare Text Data (Keys must match Backend req.body)
+      Map<String, dynamic> formDataMap = {
+        "name": productNameCtrl.text,
+        "description": productDescCtrl.text,
+        "quantity": productQntCtrl.text,
+        "price": productPriceCtrl.text,
+        "offerPrice": productOffPriceCtrl.text,
+        "proCategoryId": selectedCategory?.sId ?? '',
+        "proSubCategoryId": selectedSubCategory?.sId ?? '',
+        "proBrandId": selectedBrand?.sId ?? '',
+        "proVariantTypeId": selectedVariantType?.sId ?? '',
+        "proVariantId": selectedVariants, // Pass the list of variant names/IDs
+      };
 
-  //TODO: should complete updateProduct
+      // 2. Prepare Images
+      // We map the XFiles to the keys 'image1', 'image2'... expected by your helper function
+      final List<Map<String, XFile?>> imagesList = [
+        {'image1': mainImgXFile},
+        {'image2': secondImgXFile},
+        {'image3': thirdImgXFile},
+        {'image4': fourthImgXFile},
+        {'image5': fifthImgXFile},
+      ];
+
+      // 3. Convert to FormData (Multipart)
+      final FormData form = await createFormDataForMultipleImage(
+          imgXFiles: imagesList,
+          formData: formDataMap
+      );
+
+      // 4. Send Request (POST /)
+      final response = await service.addItem(endpointUrl: 'products', itemData: form);
+
+      // 5. Handle Response
+      if (response.isOk) {
+        ApiResponse apiResponse = ApiResponse.fromJson(response.body, null);
+        if (apiResponse.success == true) {
+          clearFields();
+          SnackBarHelper.showSuccessSnackBar('${apiResponse.message}');
+          clearFields();
+        } else {
+          SnackBarHelper.showErrorSnackBar('Failed to add product: ${apiResponse.message}');
+        }
+      } else {
+        SnackBarHelper.showErrorSnackBar('Error: ${response.body?['message'] ?? response.statusText}');
+      }
+    } catch (e) {
+      print(e);
+      SnackBarHelper.showErrorSnackBar('An error occurred: $e');
+    }
+  }
+
+  // updateProduct
 
 
-  //TODO: should complete submitProduct
+
+  // complete submitProduct
+
 
 
   //TODO: should complete deleteProduct
