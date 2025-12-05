@@ -21,7 +21,10 @@ class VariantsProvider extends ChangeNotifier {
   VariantsProvider(this._dataProvider);
 
 
-  //TODO: should complete addVariant
+  // addVariant method
+  addVariant()async{
+
+  }
 
 
   //TODO: should complete updateVariant
